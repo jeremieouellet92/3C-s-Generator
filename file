@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPTIMISATION ET CORRECTION DES 3c</title>
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border-color: #e2e8f0;
+      --input-bg: #ffffff;
+      --radius: 8px;
+    }
+
+    body.dark-theme {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-color: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --border-color: #334155;
+      --input-bg: #0f172a;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    h2 { 
+      margin: 0; 
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    button, textarea {
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1.25rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--text-muted); color: white; }
+    .btn-secondary:hover { opacity: 0.9; }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .input-group, .field-group { margin-bottom: 1.25rem; }
+
+    .field-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .meta-info {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: normal;
+    }
+
+    .btn-copy {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      background: var(--border-color);
+      color: var(--text-color);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .btn-copy:hover { opacity: 0.85; }
+    .btn-copy.copied { background: #10b981; color: white; }
+
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      resize: vertical;
+      min-height: 80px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      text-transform: uppercase;
+    }
+
+    .result-textarea {
+      cursor: pointer;
+    }
+
+    /* Animation Spinner */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ffffff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Section Historique */
+    .history-section {
+      margin-top: 2rem;
+      border-top: 2px dashed var(--border-color);
+      padding-top: 1rem;
+    }
+
+    .history-card {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .history-card:hover {
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-row">
+    <div class="title-group">
+      <h2>OPTIMISATION ET CORRECTION DES 3c ✨</h2>
+      <div class="subtitle">(AVEC 3.6-FLASH GEMINI)</div>
+    </div>
+    <button id="btn-theme" class="btn-icon">🌙 Sombre</button>
+  </div>
+
+  <!-- Zone des notes du technicien -->
+  <div class="input-group">
+    <div class="field-header">
+      <label for="input-notes">NOTES BRUTES DU TECHNICIEN :</label>
+      <span id="char-count" class="meta-info">0 car.</span>
+    </div>
+    <textarea id="input-notes" placeholder="Entrez vos notes ici... (Astuce: Ctrl + Entrée pour lancer GO)" style="min-height: 100px; text-transform: none;"></textarea>
+  </div>
+
+  <!-- Commandes (Sans menu déroulant de langue) -->
+  <div class="controls-row">
+    <button id="btn-go" class="btn btn-primary">
+      <span class="spinner" id="btn-spinner"></span>
+      <span id="btn-text">GO</span>
+    </button>
+    <button id="btn-switch-lang" class="btn btn-secondary" title="Traduire vers l'autre langue">🔄 TRADUIRE (FR/EN)</button>
+    <button id="btn-clear" class="btn btn-secondary">EFFACER</button>
+    <button id="btn-copy-all" class="btn-copy" style="padding: 0.5rem 1rem; background: var(--primary); color: white;">📋 COPIER TOUT</button>
+  </div>
+
+  <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+  <!-- Résultats -->
+  <div class="field-group">
+    <div class="field-header">
+      <label for="complaint">COMPLAINT / PLAINTE CLIENT</label>
+      <button class="btn-copy" data-target="complaint">COPIER</button>
+    </div>
+    <textarea id="complaint" class="result-textarea" readonly placeholder="LE RÉSULTAT APPARAÎTRA ICI... (CLIQUEZ POUR COPIER)"></textarea>
+  </div>
+
+  <div class="field-group">
+    <div class="field-header">
+      <label for="cause">CAUSE</label>
+      <button class="btn-copy" data-target="cause">COPIER</button>
+    </div>
+    <textarea id="cause" class="result-textarea" readonly placeholder="LE RÉSULTAT APPARAÎTRA ICI... (CLIQUEZ POUR COPIER)"></textarea>
+  </div>
+
+  <div class="field-group">
+    <div class="field-header">
+      <label for="correction">CORRECTION</label>
+      <button class="btn-copy" data-target="correction">COPIER</button>
+    </div>
+    <textarea id="correction" class="result-textarea" readonly placeholder="LE RÉSULTAT APPARAÎTRA ICI... (CLIQUEZ POUR COPIER)"></textarea>
+  </div>
+
+  <!-- Section Historique -->
+  <div class="history-section">
+    <div class="field-header">
+      <label>📜 HISTORIQUE RÉCENT</label>
+      <button id="btn-clear-history" class="btn-copy" style="font-weight: normal;">Vider l'historique</button>
+    </div>
+    <div id="history-list">
+      <i style="font-size: 0.85rem; color: var(--text-muted);">Aucune note récente.</i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 🔑 Clé API Gemini
+  const API_KEY = "AQ.Ab8RN6JuylSnn1MZIECdQffz-njuP5sN9pZ669eTVOuuikIw5A";
+
+  const inputNotes = document.getElementById('input-notes');
+  const charCount = document.getElementById('char-count');
+  const complaintField = document.getElementById('complaint');
+  const causeField = document.getElementById('cause');
+  const correctionField = document.getElementById('correction');
+
+  // Langue courante stockée (par défaut Français sans accents)
+  let currentLang = localStorage.getItem('3ccc_langue') || 'fr_no_accents';
+
+  // --- RESTAURATION LOCALSTORAGE AU CHARGEMENT ---
+  if (localStorage.getItem('3ccc_notes')) {
+    inputNotes.value = localStorage.getItem('3ccc_notes');
+    charCount.textContent = `${inputNotes.value.length} car.`;
+  }
+  if (localStorage.getItem('3ccc_complaint')) complaintField.value = localStorage.getItem('3ccc_complaint');
+  if (localStorage.getItem('3ccc_cause')) causeField.value = localStorage.getItem('3ccc_cause');
+  if (localStorage.getItem('3ccc_correction')) correctionField.value = localStorage.getItem('3ccc_correction');
+
+  // Sauvegarde automatique des notes à la frappe
+  inputNotes.addEventListener('input', () => {
+    charCount.textContent = `${inputNotes.value.length} car.`;
+    localStorage.setItem('3ccc_notes', inputNotes.value);
+  });
+
+  inputNotes.focus();
+
+  // 1. GESTION DARK / LIGHT MODE
+  const btnTheme = document.getElementById('btn-theme');
+  btnTheme.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    const isDark = document.body.classList.contains('dark-theme');
+    btnTheme.textContent = isDark ? "☀️ Clair" : "🌙 Sombre";
+  });
+
+  // 2. RACCOURCI CLAVIER (Ctrl + Enter)
+  inputNotes.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      generateReport();
+    }
+  });
+
+  // 3. BOUTON EFFACER
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    inputNotes.value = '';
+    complaintField.value = '';
+    causeField.value = '';
+    correctionField.value = '';
+    charCount.textContent = '0 car.';
+
+    localStorage.removeItem('3ccc_notes');
+    localStorage.removeItem('3ccc_complaint');
+    localStorage.removeItem('3ccc_cause');
+    localStorage.removeItem('3ccc_correction');
+    inputNotes.focus();
+  });
+
+  // 4. COPIE RAPIDE
+  document.querySelectorAll('.btn-copy[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      copyTargetText(btn.getAttribute('data-target'), btn);
+    });
+  });
+
+  document.querySelectorAll('.result-textarea').forEach(textarea => {
+    textarea.addEventListener('click', () => {
+      if (textarea.value.trim() !== '') {
+        const btn = document.querySelector(`.btn-copy[data-target="${textarea.id}"]`);
+        copyTargetText(textarea.id, btn);
+      }
+    });
+  });
+
+  function copyTargetText(targetId, btnElement) {
+    const textarea = document.getElementById(targetId);
+    if (textarea.value.trim() !== '') {
+      navigator.clipboard.writeText(textarea.value);
+      if (btnElement) triggerCopyEffect(btnElement, "COPIÉ !");
+    }
+  }
+
+  // 5. BOUTON COPIER TOUT
+  document.getElementById('btn-copy-all').addEventListener('click', () => {
+    const c = complaintField.value;
+    const cause = causeField.value;
+    const cor = correctionField.value;
+
+    if (!c && !cause && !cor) return;
+
+    const textAll = `COMPLAINT / PLAINTE CLIENT:\n${c}\n\nCAUSE:\n${cause}\n\nCORRECTION:\n${cor}`;
+    navigator.clipboard.writeText(textAll);
+    triggerCopyEffect(document.getElementById('btn-copy-all'), "TOUT COPIÉ !");
+  });
+
+  function triggerCopyEffect(btn, tempText) {
+    const originalText = btn.textContent;
+    btn.textContent = tempText;
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.classList.remove('copied');
+    }, 1500);
+  }
+
+  // 6. HISTORIQUE
+  let historyData = JSON.parse(localStorage.getItem('3ccc_history') || '[]');
+  renderHistory();
+
+  function saveToHistory(notes, res) {
+    historyData.unshift({ notes, res, date: new Date().toLocaleTimeString() });
+    if (historyData.length > 5) historyData.pop();
+    localStorage.setItem('3ccc_history', JSON.stringify(historyData));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const container = document.getElementById('history-list');
+    if (historyData.length === 0) {
+      container.innerHTML = '<i style="font-size: 0.85rem; color: var(--text-muted);">Aucune note récente.</i>';
+      return;
+    }
+    container.innerHTML = '';
+    historyData.forEach((item) => {
+      const card = document.createElement('div');
+      card.className = 'history-card';
+      card.innerHTML = `<b>[${item.date}]</b> ${item.notes.substring(0, 60)}...`;
+      card.onclick = () => {
+        inputNotes.value = item.notes;
+        complaintField.value = item.res.complaint || '';
+        causeField.value = item.res.cause || '';
+        correctionField.value = item.res.correction || '';
+        
+        charCount.textContent = `${item.notes.length} car.`;
+        
+        localStorage.setItem('3ccc_notes', item.notes);
+        localStorage.setItem('3ccc_complaint', item.res.complaint || '');
+        localStorage.setItem('3ccc_cause', item.res.cause || '');
+        localStorage.setItem('3ccc_correction', item.res.correction || '');
+      };
+      container.appendChild(card);
+    });
+  }
+
+  document.getElementById('btn-clear-history').addEventListener('click', () => {
+    historyData = [];
+    localStorage.removeItem('3ccc_history');
+    renderHistory();
+  });
+
+  // 7. BOUTON GO
+  document.getElementById('btn-go').addEventListener('click', () => {
+    generateReport();
+  });
+
+  // 8. BOUTON TRADUIRE (Bascule la langue et relance)
+  document.getElementById('btn-switch-lang').addEventListener('click', () => {
+    currentLang = currentLang === 'fr_no_accents' ? 'en' : 'fr_no_accents';
+    localStorage.setItem('3ccc_langue', currentLang);
+    generateReport();
+  });
+
+  // Fonction centrale pour l'appel API Gemini
+  async function generateReport() {
+    const notes = inputNotes.value;
+    const btnGo = document.getElementById('btn-go');
+    const spinner = document.getElementById('btn-spinner');
+    const btnText = document.getElementById('btn-text');
+
+    if (!notes.trim()) {
+      alert("Veuillez entrer des notes brutes.");
+      return;
+    }
+
+    btnGo.disabled = true;
+    spinner.style.display = "inline-block";
+    btnText.textContent = "GÉNÉRATION...";
+
+    let systemPrompt = "";
+    if (currentLang === "fr_no_accents") {
+      systemPrompt = "Tu es un assistant mécanique automobile. Transforme les notes brutes du technicien en un rapport structuré au format 3 C's (COMPLAINT, CAUSE, CORRECTION). RÈGLES DE RÉDACTION : Rédige TOUT LE TEXTE STRICTEMENT EN MAJUSCULES. N'utilise AUCUN ACCENT en français (remplace É/È/Ê par E, À par A, Ç par C, etc.). Cependant, CONSERVE ET UTILISE TOUTE LA PONCTUATION STANDARD (points, virgules, apostrophes, tirets, etc.) pour rendre le texte clair. Réponds STRICTEMENT au format JSON avec les clés : complaint, cause, correction.";
+    } else {
+      systemPrompt = "You are an automotive repair technician assistant. Convert the raw technician notes into a clear 3 C's report (COMPLAINT, CAUSE, CORRECTION) in English. WRITE EVERYTHING STRICTLY IN CAPITAL LETTERS. Return standard punctuation. Respond STRICTLY in valid JSON format with keys: complaint, cause, correction.";
+    }
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `${systemPrompt}\n\nNotes brutes:\n${notes}` }] }],
+          generationConfig: { response_mime_type: "application/json" }
+        })
+      });
+
+      const data = await response.json();
+      const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+
+      const complaintText = (parsed.complaint || '').toUpperCase();
+      const causeText = (parsed.cause || '').toUpperCase();
+      const correctionText = (parsed.correction || '').toUpperCase();
+
+      complaintField.value = complaintText;
+      causeField.value = causeText;
+      correctionField.value = correctionText;
+
+      localStorage.setItem('3ccc_complaint', complaintText);
+      localStorage.setItem('3ccc_cause', causeText);
+      localStorage.setItem('3ccc_correction', correctionText);
+
+      saveToHistory(notes, {
+        complaint: complaintText,
+        cause: causeText,
+        correction: correctionText
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la génération. Vérifiez votre clé API.");
+    } finally {
+      btnGo.disabled = false;
+      spinner.style.display = "none";
+      btnText.textContent = "GO";
+    }
+  }
+</script>
+
+</body>
+</html>
