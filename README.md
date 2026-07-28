@@ -29,9 +29,3 @@ Un outil web léger, rapide et intelligent conçu spécifiquement pour les ateli
 * **Google Gemini API** (`gemini-3.6-flash`)
 
 ---
-
-## 🚀 Installation & Utilisation
-
-1. **Cloner le dépôt** :
-   ```bash
-   git clone [https://github.com/votre-utilisateur/3ccc.git](https://github.com/votre-utilisateur/3ccc.git)
